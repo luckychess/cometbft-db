@@ -1,7 +1,9 @@
 package db
 
 import (
+	"encoding/hex"
 	"fmt"
+	"log"
 	"path/filepath"
 
 	"github.com/syndtr/goleveldb/leveldb"
@@ -28,6 +30,7 @@ func NewGoLevelDB(name string, dir string) (*GoLevelDB, error) {
 }
 
 func NewGoLevelDBWithOpts(name string, dir string, o *opt.Options) (*GoLevelDB, error) {
+	log.Printf("New db: %s", name)
 	dbPath := filepath.Join(dir, name+".db")
 	db, err := leveldb.OpenFile(dbPath, o)
 	if err != nil {
@@ -65,6 +68,7 @@ func (db *GoLevelDB) Has(key []byte) (bool, error) {
 
 // Set implements DB.
 func (db *GoLevelDB) Set(key []byte, value []byte) error {
+	log.Printf("Set call: key is %s, value is %d bytes", hex.EncodeToString(key), len(value))
 	if len(key) == 0 {
 		return errKeyEmpty
 	}
@@ -79,6 +83,7 @@ func (db *GoLevelDB) Set(key []byte, value []byte) error {
 
 // SetSync implements DB.
 func (db *GoLevelDB) SetSync(key []byte, value []byte) error {
+	log.Printf("SetSync call: key is %s, value is %d bytes", hex.EncodeToString(key), len(value))
 	if len(key) == 0 {
 		return errKeyEmpty
 	}
