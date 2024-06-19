@@ -20,7 +20,8 @@ func init() {
 }
 
 type GoLevelDB struct {
-	db *leveldb.DB
+	db   *leveldb.DB
+	name string
 }
 
 var _ DB = (*GoLevelDB)(nil)
@@ -37,7 +38,8 @@ func NewGoLevelDBWithOpts(name string, dir string, o *opt.Options) (*GoLevelDB, 
 		return nil, err
 	}
 	database := &GoLevelDB{
-		db: db,
+		db:   db,
+		name: name,
 	}
 	return database, nil
 }
@@ -68,7 +70,7 @@ func (db *GoLevelDB) Has(key []byte) (bool, error) {
 
 // Set implements DB.
 func (db *GoLevelDB) Set(key []byte, value []byte) error {
-	log.Printf("Set call: key is %s, value is %d bytes", hex.EncodeToString(key), len(value))
+	log.Printf("Set call: name is %s, key is %s, value is %d bytes", db.name, hex.EncodeToString(key), len(value))
 	if len(key) == 0 {
 		return errKeyEmpty
 	}
@@ -83,7 +85,7 @@ func (db *GoLevelDB) Set(key []byte, value []byte) error {
 
 // SetSync implements DB.
 func (db *GoLevelDB) SetSync(key []byte, value []byte) error {
-	log.Printf("SetSync call: key is %s, value is %d bytes", hex.EncodeToString(key), len(value))
+	log.Printf("Set call: name is %s, key is %s, value is %d bytes", db.name, hex.EncodeToString(key), len(value))
 	if len(key) == 0 {
 		return errKeyEmpty
 	}
