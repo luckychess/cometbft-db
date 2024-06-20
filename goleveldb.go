@@ -175,6 +175,7 @@ func (db *GoLevelDB) Stats() map[string]string {
 
 // NewBatch implements DB.
 func (db *GoLevelDB) NewBatch() Batch {
+	log.Printf("NewBatch call: name is %s", db.name)
 	return newGoLevelDBBatch(db)
 }
 
