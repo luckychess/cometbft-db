@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/hex"
 	"log"
 
 	"github.com/syndtr/goleveldb/leveldb"
@@ -24,7 +23,7 @@ func newGoLevelDBBatch(db *GoLevelDB) *goLevelDBBatch {
 
 // Set implements Batch.
 func (b *goLevelDBBatch) Set(key, value []byte) error {
-	log.Printf("Set (batch): name is %s, key is %s, value is %d bytes", b.db.name, hex.EncodeToString(key), len(value))
+	// log.Printf("Set (batch): name is %s, key is %s, value is %d bytes", b.db.name, hex.EncodeToString(key), len(value))
 	if len(key) == 0 {
 		return errKeyEmpty
 	}

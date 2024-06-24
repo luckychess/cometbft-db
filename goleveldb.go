@@ -52,7 +52,10 @@ func NewGoLevelDBWithOpts(name string, dir string, o *opt.Options) (*GoLevelDB, 
 			select {
 			case <-ticker.C:
 				log.Printf("DB %s stats", name)
-				database.Print()
+				stats := database.Stats()
+				for k, v := range stats {
+					log.Printf("%s\t%s", k, v)
+				}
 			}
 		}
 	}
