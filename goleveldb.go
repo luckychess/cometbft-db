@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"time"
 
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/errors"
@@ -19,9 +20,12 @@ func init() {
 	registerDBCreator(GoLevelDBBackend, dbCreator, false)
 }
 
+type timerFunc func()
+
 type GoLevelDB struct {
 	db   *leveldb.DB
 	name string
+	f    timerFunc
 }
 
 var _ DB = (*GoLevelDB)(nil)
@@ -41,6 +45,19 @@ func NewGoLevelDBWithOpts(name string, dir string, o *opt.Options) (*GoLevelDB, 
 		db:   db,
 		name: name,
 	}
+	ticker := time.NewTicker(1 * time.Minute)
+
+	f := func() {
+		for {
+			select {
+			case <-ticker.C:
+				log.Printf("DB %s stats", name)
+				database.Print()
+			}
+		}
+	}
+	database.f = f
+	go database.f()
 	return database, nil
 }
 
