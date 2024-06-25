@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/hex"
 	"fmt"
 	"log"
 	"path/filepath"
@@ -88,7 +87,8 @@ func (db *GoLevelDB) Has(key []byte) (bool, error) {
 
 // Set implements DB.
 func (db *GoLevelDB) Set(key []byte, value []byte) error {
-	log.Printf("Set call: name is %s, key is %s, value is %d bytes", db.name, hex.EncodeToString(key), len(value))
+	// log.Printf("Set call: name is %s, key is %s, value is %d bytes", db.name, hex.EncodeToString(key), len(value))
+	db.written += uint64(len(value))
 	if len(key) == 0 {
 		return errKeyEmpty
 	}
@@ -103,7 +103,8 @@ func (db *GoLevelDB) Set(key []byte, value []byte) error {
 
 // SetSync implements DB.
 func (db *GoLevelDB) SetSync(key []byte, value []byte) error {
-	log.Printf("Set call: name is %s, key is %s, value is %d bytes", db.name, hex.EncodeToString(key), len(value))
+	// log.Printf("Set call: name is %s, key is %s, value is %d bytes", db.name, hex.EncodeToString(key), len(value))
+	db.written += uint64(len(value))
 	if len(key) == 0 {
 		return errKeyEmpty
 	}
@@ -193,7 +194,7 @@ func (db *GoLevelDB) Stats() map[string]string {
 
 // NewBatch implements DB.
 func (db *GoLevelDB) NewBatch() Batch {
-	log.Printf("NewBatch call: name is %s", db.name)
+	// log.Printf("NewBatch call: name is %s", db.name)
 	return newGoLevelDBBatch(db)
 }
 
