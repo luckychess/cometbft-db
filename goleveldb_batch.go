@@ -1,10 +1,6 @@
 package db
 
 import (
-	"log"
-	"math/rand"
-	"runtime/debug"
-
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 )
@@ -61,11 +57,9 @@ func (b *goLevelDBBatch) WriteSync() error {
 }
 
 func (b *goLevelDBBatch) write(sync bool) error {
-	log.Printf("Write (batch): name is %s, size is %d bytes", b.db.name, len(b.batch.Dump()))
-	r := rand.Intn(1000)
-	if r == 0 {
-		debug.PrintStack()
-	}
+	// log.Printf("Write (batch): name is %s, size is %d bytes", b.db.name, len(b.batch.Dump()))
+	b.db.written += uint64(len(b.batch.Dump()))
+
 	if b.batch == nil {
 		return errBatchClosed
 	}

@@ -23,9 +23,10 @@ func init() {
 type timerFunc func()
 
 type GoLevelDB struct {
-	db   *leveldb.DB
-	name string
-	f    timerFunc
+	db      *leveldb.DB
+	name    string
+	written uint64
+	f       timerFunc
 }
 
 var _ DB = (*GoLevelDB)(nil)
@@ -51,11 +52,8 @@ func NewGoLevelDBWithOpts(name string, dir string, o *opt.Options) (*GoLevelDB, 
 		for {
 			select {
 			case <-ticker.C:
-				log.Printf("DB %s stats", name)
-				stats := database.Stats()
-				for k, v := range stats {
-					log.Printf("%s\t%s", k, v)
-				}
+				log.Printf("DB %s stats", database.name)
+				log.Printf("%d bytes written", database.written)
 			}
 		}
 	}
