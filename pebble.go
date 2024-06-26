@@ -3,6 +3,7 @@ package db
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"path/filepath"
 
 	"github.com/cockroachdb/pebble"
@@ -29,6 +30,7 @@ func NewPebbleDB(name string, dir string) (DB, error) {
 }
 
 func NewPebbleDBWithOpts(name string, dir string, opts *pebble.Options) (*PebbleDB, error) {
+	log.Printf("New pebble db: %s", name)
 	dbPath := filepath.Join(dir, name+".db")
 	opts.EnsureDefaults()
 	p, err := pebble.Open(dbPath, opts)
