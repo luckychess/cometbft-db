@@ -53,6 +53,9 @@ func NewGoLevelDBWithOpts(name string, dir string, o *opt.Options) (*GoLevelDB, 
 			case <-ticker.C:
 				log.Printf("DB %s stats", database.name)
 				log.Printf("%d bytes written", database.written)
+				for k, v := range database.Stats() {
+					log.Printf("%s %s", k, v)
+				}
 			}
 		}
 	}
