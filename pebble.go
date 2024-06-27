@@ -259,10 +259,10 @@ func (b *pebbleDBBatch) Delete(key []byte) error {
 // Write implements Batch.
 func (b *pebbleDBBatch) Write() error {
 	// fmt.Println("pebbleDBBatch.Write")
-	b.db.written += uint64(b.batch.Len())
 	if b.batch == nil {
 		return errBatchClosed
 	}
+	b.db.written += uint64(b.batch.Len())
 
 	err := b.batch.Commit(pebble.NoSync)
 	if err != nil {
@@ -276,10 +276,10 @@ func (b *pebbleDBBatch) Write() error {
 // WriteSync implements Batch.
 func (b *pebbleDBBatch) WriteSync() error {
 	// fmt.Println("pebbleDBBatch.WriteSync")
-	b.db.written += uint64(b.batch.Len())
 	if b.batch == nil {
 		return errBatchClosed
 	}
+	b.db.written += uint64(b.batch.Len())
 	err := b.batch.Commit(pebble.Sync)
 	if err != nil {
 		return err
