@@ -42,7 +42,8 @@ func NewPebbleDBWithOpts(name string, dir string, opts *pebble.Options) (*Pebble
 		return nil, err
 	}
 	database := &PebbleDB{
-		db: p,
+		db:   p,
+		name: name,
 	}
 	ticker := time.NewTicker(1 * time.Minute)
 	f := func() {
