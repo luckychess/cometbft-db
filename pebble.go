@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"time"
 
 	"github.com/cockroachdb/pebble"
 )
@@ -18,7 +19,10 @@ func init() {
 
 // PebbleDB is a PebbleDB backend.
 type PebbleDB struct {
-	db *pebble.DB
+	db      *pebble.DB
+	name    string
+	written uint64
+	f       timerFunc
 }
 
 var _ DB = (*PebbleDB)(nil)
@@ -37,9 +41,25 @@ func NewPebbleDBWithOpts(name string, dir string, opts *pebble.Options) (*Pebble
 	if err != nil {
 		return nil, err
 	}
-	return &PebbleDB{
+	database := &PebbleDB{
 		db: p,
-	}, err
+	}
+	ticker := time.NewTicker(1 * time.Minute)
+	f := func() {
+		for {
+			select {
+			case <-ticker.C:
+				log.Printf("pebble DB %s stats", database.name)
+				log.Printf("%d bytes written", database.written)
+				for k, v := range database.Stats() {
+					log.Printf("%s %s", k, v)
+				}
+			}
+		}
+	}
+	database.f = f
+	go database.f()
+	return database, err
 }
 
 // Get implements DB.
@@ -74,6 +94,7 @@ func (db *PebbleDB) Has(key []byte) (bool, error) {
 
 // Set implements DB.
 func (db *PebbleDB) Set(key []byte, value []byte) error {
+	db.written += uint64(len(value))
 	if len(key) == 0 {
 		return errKeyEmpty
 	}
@@ -89,6 +110,7 @@ func (db *PebbleDB) Set(key []byte, value []byte) error {
 
 // SetSync implements DB.
 func (db *PebbleDB) SetSync(key []byte, value []byte) error {
+	db.written += uint64(len(value))
 	if len(key) == 0 {
 		return errKeyEmpty
 	}
@@ -237,6 +259,7 @@ func (b *pebbleDBBatch) Delete(key []byte) error {
 // Write implements Batch.
 func (b *pebbleDBBatch) Write() error {
 	// fmt.Println("pebbleDBBatch.Write")
+	b.db.written += uint64(b.batch.Len())
 	if b.batch == nil {
 		return errBatchClosed
 	}
@@ -253,6 +276,7 @@ func (b *pebbleDBBatch) Write() error {
 // WriteSync implements Batch.
 func (b *pebbleDBBatch) WriteSync() error {
 	// fmt.Println("pebbleDBBatch.WriteSync")
+	b.db.written += uint64(b.batch.Len())
 	if b.batch == nil {
 		return errBatchClosed
 	}
