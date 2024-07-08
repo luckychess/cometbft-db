@@ -58,11 +58,10 @@ func (b *goLevelDBBatch) WriteSync() error {
 
 func (b *goLevelDBBatch) write(sync bool) error {
 	// log.Printf("Write (batch): name is %s, size is %d bytes", b.db.name, len(b.batch.Dump()))
-	b.db.written += uint64(len(b.batch.Dump()))
-
 	if b.batch == nil {
 		return errBatchClosed
 	}
+	b.db.written += uint64(len(b.batch.Dump()))
 	err := b.db.db.Write(b.batch, &opt.WriteOptions{Sync: sync})
 	if err != nil {
 		return err
